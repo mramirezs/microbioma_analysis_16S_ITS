@@ -1,0 +1,49 @@
+# ====================================
+# Archivos de Datos (muy grandes)
+# ====================================
+
+# Datos crudos de secuenciación
+**/1_RawData/*.fastq
+**/1_RawData/*.fastq.gz
+**/1_RawData/*.fq
+**/1_RawData/*.fq.gz
+
+# Datos procesados
+**/2_CleanData/*.fastq
+**/2_CleanData/*.fasta
+**/2_CleanData/*.fa
+
+# Archivos de clustering
+**/OTU/*.fasta
+**/OTU/*.fa
+
+# ====================================
+# Bases de Datos
+# ====================================
+**/databases/*.fasta
+**/databases/*.db
+shared/databases/
+
+# ====================================
+# Archivos Temporales y Logs
+# ====================================
+*.tmp
+*.temp
+*_tmp/
+**/logs/*.log
+**/logs/*.err
+
+# Mantener estructura vacía
+!**/logs/.gitkeep
+!**/databases/.gitkeep
+
+# ====================================
+# R, Python, Sistema
+# ====================================
+.Rhistory
+.RData
+__pycache__/
+*.pyc
+.DS_Store
+*.swp
+*~

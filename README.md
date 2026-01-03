@@ -1,131 +1,181 @@
-# Análisis de Microbioma
+# Análisis de Microbioma en Otitis Canina - 16S rRNA e ITS
 
 ## 📋 Descripción del Proyecto
 
-Este repositorio contiene el pipeline completo para el análisis de microbioma en muestras de oído de perros con y sin otitis, utilizando secuenciación de amplicones 16S rRNA (bacterias) e ITS (hongos).
+Pipeline bioinformático completo para el análisis de microbioma en muestras de oído de perros con y sin otitis, utilizando secuenciación de amplicones:
+- **16S rRNA** para caracterización bacteriana
+- **ITS** para caracterización fúngica
 
-### Objetivos
-1. Caracterizar la microbiota bacteriana (16S) y fúngica (ITS) en oídos caninos
-2. Comparar la composición microbiana entre:
-   - Perros con otitis vs sin otitis
-   - Oído derecho vs oído izquierdo
-   - Perros con historial de dermatitis atópica vs controles
-3. Identificar biomarcadores asociados con otitis
-4. Predecir funciones metabólicas de las comunidades microbianas
+### Contexto Clínico
+La otitis canina es una enfermedad común que afecta el canal auditivo, frecuentemente asociada con dermatitis atópica. Este estudio investiga la composición microbiana del oído en diferentes estados clínicos para identificar biomarcadores y comprender la progresión de la enfermedad.
 
 ## 🔬 Diseño Experimental
 
-### Grupos de Muestras
+### Grupos de Muestras (n=10)
 
-| Oído | Condición | Muestras | Historia Clínica |
-|------|-----------|----------|------------------|
-| Derecho | Otitis | ECU, SEU, WLU | Dermatitis atópica previa |
-| Derecho | Sano | RMU | Recuperado de dermatitis |
-| Derecho | Control | EEU | Sin historial de dermatitis |
-| Izquierdo | Otitis | SED, LKD | Dermatitis atópica previa |
-| Izquierdo | Sano | RMD, LLD, TBD | Recuperado de dermatitis |
-| Izquierdo | Control | EEU | Sin historial de dermatitis |
+**Oído Derecho:**
+| Condición | Muestras | N | Historia Clínica |
+|-----------|----------|---|------------------|
+| Otitis | ECU, SEU, WLU | 3 | Dermatitis atópica previa |
+| Sano (Recuperado) | RMU | 1 | Recuperado de dermatitis |
+| Control | EEU | 1 | Sin historial de dermatitis |
 
-**Total: 10 muestras** (EEU es control compartido)
+**Oído Izquierdo:**
+| Condición | Muestras | N | Historia Clínica |
+|-----------|----------|---|------------------|
+| Otitis | SED, LKD | 2 | Dermatitis atópica previa |
+| Sano (Recuperado) | RMD, LLD, TBD | 3 | Recuperado de dermatitis |
+| Control | EEU* | - | Sin historial de dermatitis |
+
+*EEU: Control compartido para ambos oídos
+
+### Comparaciones Principales
+1. **Otitis vs Sano vs Control** - Identificar marcadores de enfermedad
+2. **Oído Derecho vs Izquierdo** - Evaluar lateralidad
+3. **Con historial vs Sin historial** - Efecto de dermatitis atópica previa
 
 ### Estrategia de Secuenciación
-- **Plataforma**: Illumina MiSeq (Paired-end)
-- **16S rRNA**: Región hipervariable V3-V4
-- **ITS**: Región ITS1 o ITS2
-- **Profundidad**: ~70,000-100,000 reads por muestra
+- **Plataforma**: Illumina MiSeq (Paired-end 2×300 bp)
+- **16S rRNA**: Región V3-V4 (~460 bp)
+- **ITS**: Región ITS1/ITS2
+- **Profundidad promedio**: ~85,000 reads/muestra
+- **Rango de reads**: 70,543 - 103,697 por muestra
 
 ## 📁 Estructura del Repositorio
 ```
-ECUADOR/
-├── 16S2512872/                 # Análisis bacteriano (16S)
-│   ├── 1_QC/                   # Control de calidad
-│   ├── 2_OTU_Taxa/             # Clustering y taxonomía
-│   ├── 3_AlphaDiversity/       # Diversidad alfa
-│   ├── 4_BetaDiversity/        # Diversidad beta
-│   ├── 5_GroupAnalysis/        # Análisis de grupos
-│   ├── 6_Taxonomic/            # Composición taxonómica
-│   ├── 7_Differential/         # Análisis diferencial
-│   ├── 8_Environmental/        # Análisis ambiental (opcional)
-│   ├── 9_Network/              # Análisis de redes
-│   ├── 10_Function/            # Predicción funcional
-│   ├── 11_Reports/             # Reportes finales
-│   ├── metadata/               # Metadatos de muestras
-│   ├── scripts/                # Scripts de análisis
-│   └── logs/                   # Logs de ejecución
+microbioma_analysis_16S_ITS/
+├── 16S2512872/                      # Análisis bacteriano (16S rRNA)
+│   ├── 1_QC/                        # Control de calidad
+│   │   ├── 1_RawData/              # Datos crudos (no en GitHub)
+│   │   ├── 2_CleanData/            # Datos limpios
+│   │   └── QC_Reports/             # Reportes de calidad
+│   ├── 2_OTU_Taxa/                 # Clustering y taxonomía
+│   │   ├── OTU/                    # Tablas de OTUs
+│   │   ├── Abundance/              # Tablas de abundancia
+│   │   └── Phylogeny/              # Árboles filogenéticos
+│   ├── 3_AlphaDiversity/           # Diversidad alfa
+│   ├── 4_BetaDiversity/            # Diversidad beta
+│   ├── 5_GroupAnalysis/            # PERMANOVA, ANOSIM, etc.
+│   ├── 6_Taxonomic/                # Composición taxonómica
+│   ├── 7_Differential/             # Análisis diferencial (LEfSe, DESeq2)
+│   ├── 8_Environmental/            # Análisis ambiental (opcional)
+│   ├── 9_Network/                  # Redes de co-ocurrencia
+│   ├── 10_Function/                # Predicción funcional (PICRUSt2)
+│   ├── 11_Reports/                 # Reportes finales
+│   ├── metadata/                   # Metadatos de muestras
+│   ├── scripts/                    # Scripts específicos 16S
+│   └── logs/                       # Logs de ejecución
 │
-├── ITS2512872/                 # Análisis fúngico (ITS)
-│   └── [misma estructura]
+├── ITS2512872/                      # Análisis fúngico (ITS)
+│   └── [misma estructura que 16S]
 │
-└── shared/                     # Recursos compartidos
-    ├── databases/              # Bases de datos de referencia
-    ├── references/             # Literatura y referencias
-    ├── scripts/                # Scripts reutilizables
-    └── conda_envs/             # Ambientes conda exportados
+├── shared/                          # Recursos compartidos
+│   ├── databases/                  # Bases de datos de referencia
+│   │   ├── 16S/                   # SILVA, RDP, GTDB
+│   │   ├── 18S/                   # SILVA 18S
+│   │   ├── ITS/                   # UNITE
+│   │   └── functional/            # KEGG, COG, etc.
+│   ├── conda_envs/                # Archivos YAML de ambientes
+│   ├── references/                # Literatura y referencias
+│   └── scripts/                   # Scripts reutilizables
+│
+├── docs/                           # Documentación
+│   ├── tutorials/                 # Tutoriales paso a paso
+│   ├── references/                # Referencias bibliográficas
+│   ├── figures/                   # Figuras para documentación
+│   └── software_versions.md       # Versiones de software
+│
+└── scripts/                        # Scripts maestros
+    ├── setup/                     # Instalación y configuración
+    ├── preprocessing/             # Preprocesamiento
+    ├── analysis/                  # Análisis principales
+    └── utils/                     # Utilidades
 ```
 
 ## 🛠️ Software y Dependencias
 
-### Ambientes Conda
+### Ambientes Conda Especializados
 
-Este proyecto utiliza 7 ambientes conda especializados:
+El proyecto utiliza 7 ambientes conda para organizar las dependencias:
 
-1. **microbiome_qc**: Control de calidad y preprocesamiento
-2. **microbiome_otu**: Clustering de OTUs y taxonomía
-3. **microbiome_phylo**: Análisis filogenético
-4. **microbiome_r**: Análisis estadístico en R
-5. **microbiome_viz**: Visualización avanzada
-6. **microbiome_func**: Predicción funcional
-7. **microbiome_diff**: Análisis diferencial (LEfSe)
+| Ambiente | Propósito | Software Principal |
+|----------|-----------|-------------------|
+| `microbiome_qc` | Control de calidad | cutadapt, PEAR, PRINSEQ, FastQC |
+| `microbiome_otu` | Clustering OTUs | VSEARCH, mothur, BLAST+ |
+| `microbiome_phylo` | Análisis filogenético | MAFFT, FastTree, MUSCLE |
+| `microbiome_r` | Análisis estadístico | R, phyloseq, vegan, DESeq2 |
+| `microbiome_viz` | Visualización | Krona, GraPhlAn, ETE3 |
+| `microbiome_func` | Predicción funcional | PICRUSt2, FAPROTAX |
+| `microbiome_diff` | Análisis diferencial | LEfSe, STAMP |
 
-### Software Principal
+### Software Principal por Categoría
 
-| Categoría | Software | Versión | Propósito |
-|-----------|----------|---------|-----------|
-| **QC** | cutadapt | 4.4 | Remoción de adaptadores |
-| | PEAR | 0.9.6 | Ensamblaje paired-end |
-| | PRINSEQ | 0.20.4 | Filtrado de calidad |
-| | FastQC | 0.12.1 | Reporte de calidad |
-| **Clustering** | VSEARCH | 2.22.1 | Clustering de OTUs |
-| | mothur | 1.48.0 | Análisis de diversidad |
-| **Taxonomía** | RDP classifier | 2.13 | Clasificación taxonómica |
-| | BLAST+ | 2.14.0 | Alineamiento de secuencias |
-| **Filogenética** | MAFFT | 7.505 | Alineamiento múltiple |
-| | FastTree | 2.1.11 | Construcción de árboles |
-| **Estadística** | R | 4.2.3 | Análisis estadístico |
-| | phyloseq | 1.42.0 | Análisis de microbioma |
-| | vegan | 2.6 | Ecología numérica |
-| | DESeq2 | 1.38.0 | Análisis diferencial |
-| **Funcional** | PICRUSt2 | 2.5.2 | Predicción de funciones |
-| | FAPROTAX | 1.2.4 | Funciones procariontes |
-| **Visualización** | Krona | 2.8.1 | Gráficos interactivos |
-| | GraPhlAn | 1.1.3 | Árboles filogenéticos |
+**Control de Calidad:**
+- cutadapt 4.4 - Remoción de adaptadores y primers
+- PEAR 0.9.6 - Ensamblaje de reads paired-end
+- PRINSEQ 0.20.4 - Filtrado por calidad
+- FastQC 0.12.1 / MultiQC 1.14 - Reportes de calidad
 
-Ver [software_versions_comparison.md](docs/software_versions_comparison.md) para detalles completos.
+**Clustering y Taxonomía:**
+- VSEARCH 2.22.1 - Clustering de OTUs (alternativa open-source a USEARCH)
+- mothur 1.48.0 - Análisis de diversidad y comunidades
+- RDP classifier 2.13 - Clasificación taxonómica
+- BLAST+ 2.14.0 - Alineamiento de secuencias
 
-## 🚀 Instalación
+**Análisis Estadístico (R):**
+- phyloseq 1.42.0 - Análisis integrado de microbioma
+- vegan 2.6 - Ecología numérica y análisis multivariado
+- DESeq2 1.38.0 - Análisis de abundancia diferencial
+- ggplot2 3.4.2 - Visualización de datos
+- mixOmics 6.22.0 - Análisis multivariado integrativo
 
-### 1. Clonar el repositorio
+**Predicción Funcional:**
+- PICRUSt2 2.5.2 - Predicción de funciones metagenómicas
+- Tax4Fun2 - Predicción funcional alternativa
+- FAPROTAX 1.2.4 - Funciones de procariontes
+
+**Visualización Especializada:**
+- Krona 2.8.1 - Gráficos taxonómicos interactivos
+- GraPhlAn 1.1.3 - Árboles filogenéticos anotados
+- ETE3 3.1.2 - Manipulación de árboles filogenéticos
+
+Ver [docs/software_versions.md](docs/software_versions.md) para la lista completa y comparación con el reporte de referencia.
+
+## 🚀 Instalación y Configuración
+
+### Requisitos Previos
+- Linux/macOS (recomendado) o Windows con WSL2
+- Conda/Mamba instalado
+- Git instalado
+- Mínimo 32 GB RAM recomendado
+- ~100 GB espacio en disco
+
+### 1. Clonar el Repositorio
 ```bash
-git clone https://github.com/tu-usuario/canine-otitis-microbiome.git
-cd canine-otitis-microbiome
+git clone https://github.com/mramirezs/microbioma_analysis_16S_ITS.git
+cd microbioma_analysis_16S_ITS
 ```
 
-### 2. Crear estructura de directorios
+### 2. Crear Estructura de Directorios
 ```bash
 bash scripts/setup/create_directory_structure.sh
 ```
 
-### 3. Instalar ambientes conda
+### 3. Instalar Ambientes Conda
 ```bash
+# Instalar todos los ambientes
 bash scripts/setup/install_conda_environments.sh
+
+# O instalar uno por uno
+bash scripts/setup/install_individual_env.sh microbiome_qc
 ```
 
-### 4. Descargar bases de datos
+### 4. Descargar Bases de Datos
 ```bash
 bash scripts/setup/download_databases.sh
 ```
 
-### 5. Verificar instalación
+### 5. Verificar Instalación
 ```bash
 bash scripts/setup/check_installation.sh
 ```
@@ -134,7 +184,12 @@ bash scripts/setup/check_installation.sh
 
 ### Análisis 16S (Bacterias)
 ```bash
-# 1. Preprocesamiento
+# Pipeline completo automatizado
+bash scripts/run_16S_pipeline.sh
+
+# O ejecutar paso a paso:
+
+# 1. Control de calidad
 bash scripts/preprocessing/01_quality_control.sh
 
 # 2. Clustering de OTUs
@@ -147,114 +202,164 @@ bash scripts/taxonomy/03_taxonomy_assignment.sh
 bash scripts/diversity/04_alpha_diversity.sh
 bash scripts/diversity/05_beta_diversity.sh
 
-# 5. Análisis estadístico
+# 5. Comparación de grupos
 bash scripts/statistical/06_group_comparison.sh
+
+# 6. Análisis diferencial
 bash scripts/statistical/07_differential_abundance.sh
 
-# 6. Predicción funcional
-bash scripts/functional/08_picrust2_analysis.sh
+# 7. Predicción funcional
+bash scripts/functional/08_functional_prediction.sh
 
-# 7. Generación de reportes
+# 8. Reporte final
 bash scripts/reporting/09_generate_report.sh
 ```
 
 ### Análisis ITS (Hongos)
 ```bash
-# Pipeline similar adaptado para ITS
-bash scripts/its_pipeline/run_its_analysis.sh
+# Pipeline completo para ITS
+bash scripts/run_ITS_pipeline.sh
 ```
 
 ## 📈 Resultados Esperados
 
+### Métricas de Calidad
+- **Reads totales**: ~850,000 (10 muestras)
+- **Reads por muestra**: 70,543 - 103,697
+- **Longitud promedio**: 270-302 bp
+- **Calidad (Phred)**: >Q30
+- **Cobertura estimada**: >99% (Good's coverage)
+
 ### Análisis de Diversidad
-- Índices alfa (Shannon, Simpson, Chao1, ACE)
-- Análisis beta (PCoA, NMDS, PERMANOVA)
-- Curvas de rarefacción
+- **Índices alfa**: Shannon, Simpson, Chao1, ACE, Coverage
+- **Diversidad beta**: PCoA, NMDS, PERMANOVA
+- **Curvas de rarefacción**: Saturación de muestreo
+- **Comparaciones estadísticas**: ANOSIM, PERMANOVA, PLSDA
 
 ### Composición Taxonómica
-- Gráficos de barras por filo/género
-- Heatmaps de abundancia
-- Diagramas circulares (Circos)
-- Árboles filogenéticos anotados
+- **Gráficos de barras**: Por filo, clase, orden, familia, género
+- **Heatmaps**: Abundancia de taxa principales
+- **Diagramas circulares**: Composición por muestra
+- **Árboles filogenéticos**: Con abundancia anotada
 
 ### Análisis Diferencial
-- Taxa diferencialmente abundantes (LEfSe)
-- Biomarcadores potenciales
-- Random Forest para clasificación
+- **LEfSe**: Biomarcadores por condición (LDA score >2)
+- **DESeq2**: Taxa diferencialmente abundantes (padj <0.05)
+- **Random Forest**: Importancia de variables
+- **ROC curves**: Poder discriminatorio
 
 ### Predicción Funcional
-- Funciones metabólicas (KEGG)
-- Procesos funcionales (COG)
-- Vías metabólicas enriquecidas
+- **KEGG Pathways**: Vías metabólicas predichas
+- **COG categories**: Categorías funcionales
+- **Enzyme classes**: Distribución de enzimas
+- **Differential functions**: Funciones enriquecidas por grupo
 
-## 📝 Metadatos
+## 📊 Metadatos de Muestras
 
-Los metadatos de las muestras se encuentran en:
+Los metadatos completos están en:
 - `16S2512872/metadata/sample_metadata.txt`
 - `ITS2512872/metadata/sample_metadata.txt`
 
-Columnas incluidas:
-- SampleID, Group, Ear, Condition, History
-- SeqNum, BaseNum, MeanLen, Barcode
+**Columnas incluidas:**
+- `SampleID`: Identificador único de muestra
+- `Group`: Grupo experimental (Otitis_Right, Healthy_Left, etc.)
+- `Ear`: Lateralidad (Right/Left)
+- `Condition`: Condición clínica (Otitis/Healthy/Control)
+- `History`: Historia clínica (Atopic_Dermatitis/Recovered/Never_Atopic)
+- `SeqNum`: Número de secuencias
+- `BaseNum`: Número de bases
+- `MeanLen`: Longitud promedio
+- `Barcode`: Código de barras
 
 ## 🔍 Control de Calidad
 
 ### Criterios de Filtrado
-- Calidad mínima (Phred): Q20
-- Longitud mínima: Variable según región
-- Remoción de quimeras: Sí
-- Cobertura mínima: Coverage > 0.99
+- **Calidad mínima (Phred)**: Q20
+- **Longitud mínima**: 200 bp
+- **Longitud máxima**: 500 bp
+- **Contenido N's**: 0
+- **Complejidad**: Low complexity sequences removed
+- **Quimeras**: Removidas con VSEARCH
 
-### Estadísticas de Secuenciación
+### Umbral de Clustering
+- **OTU clustering**: 97% similaridad (especies aproximadas)
+- **ASV detection**: Resolución de nucleótido único (opcional)
 
-Ver `1_QC/QC_Reports/` para reportes detallados.
+## 📚 Bases de Datos de Referencia
 
-## 📚 Referencias
+### Para 16S rRNA
+- **SILVA 138**: Base de datos principal (SSU Ref NR99)
+- **RDP 11.5**: Clasificación alternativa
+- **GTDB r207**: Taxonomía basada en genomas (para full-length)
 
-### Bases de Datos
-- **SILVA 138**: 16S/18S rRNA
-- **UNITE**: ITS fúngico
-- **GTDB**: Taxonomía genómica
-- **KEGG**: Funciones metabólicas
+### Para ITS
+- **UNITE 9.0**: Base de datos principal para hongos
+- **RDP ITS**: Clasificación alternativa
 
-### Literatura Clave
-1. Callahan et al. (2016) DADA2: High-resolution sample inference
-2. Douglas et al. (2020) PICRUSt2 for metagenome function prediction
-3. McMurdie & Holmes (2013) phyloseq for microbiome analysis
-4. Segata et al. (2011) LEfSe for biomarker discovery
+### Para Predicción Funcional
+- **KEGG**: Kyoto Encyclopedia of Genes and Genomes
+- **COG**: Clusters of Orthologous Groups
+- **MetaCyc**: Base de datos de vías metabólicas
 
-## 👥 Autores y Contacto
+## 👥 Equipo del Proyecto
 
-- **Investigador Principal**: [Nombre]
-- **Bioinformática**: [Tu Nombre]
-- **Institución**: [Institución]
-- **Contacto**: [email]
+- **Investigador Principal**: [Nombre del Veterinario]
+- **Análisis Bioinformático**: Mario Ramirez (mramirezs)
+- **Secuenciación**: [Laboratorio/Servicio]
+- **Institución**: [Nombre de la Institución]
 
 ## 📄 Licencia
 
-Este proyecto está bajo licencia MIT. Ver [LICENSE](LICENSE) para detalles.
+Este proyecto está bajo licencia MIT - ver [LICENSE](LICENSE) para detalles.
 
 ## 🙏 Agradecimientos
 
-- BTS CONSULTORES S.A.C. por el reporte de referencia
-- Comunidad de Bioconductor y QIIME2
-- Desarrolladores de herramientas bioinformáticas
+- **BTS CONSULTORES S.A.C.** por el reporte de referencia que guió este análisis
+- Comunidades de **Bioconductor**, **QIIME2** y **mothur**
+- Desarrolladores de todas las herramientas bioinformáticas utilizadas
+- [Servicio de Secuenciación]
 
-## 📌 Notas Importantes
+## 📖 Referencias Clave
 
-### USEARCH vs VSEARCH
-Por licenciamiento, utilizamos **VSEARCH** como alternativa open-source a USEARCH. Los resultados son comparables.
+### Metodología
+1. Callahan et al. (2016) DADA2: High-resolution sample inference. *Nat Methods* 13:581–583
+2. Rognes et al. (2016) VSEARCH: a versatile open source tool. *PeerJ* 4:e2584
+3. McMurdie & Holmes (2013) phyloseq: An R package for microbiome analysis. *PLoS ONE* 8(4):e61217
 
-### Reproducibilidad
-Todos los ambientes conda pueden ser exportados:
-```bash
-conda env export -n microbiome_qc > shared/conda_envs/microbiome_qc.yml
-```
+### Análisis Estadístico
+4. Love et al. (2014) Moderated estimation of fold change: DESeq2. *Genome Biol* 15:550
+5. Segata et al. (2011) Metagenomic biomarker discovery: LEfSe. *Genome Biol* 12:R60
 
-### Actualizaciones
-Este repositorio se actualiza regularmente. Ver [CHANGELOG.md](CHANGELOG.md) para cambios.
+### Predicción Funcional
+6. Douglas et al. (2020) PICRUSt2 for metagenome functions. *Nat Biotechnol* 38:685–688
+7. Louca et al. (2016) FAPROTAX: Decoupling function and taxonomy. *Science* 353:1272–1277
+
+### Bases de Datos
+8. Quast et al. (2013) The SILVA ribosomal RNA gene database. *Nucleic Acids Res* 41:D590–D596
+9. Nilsson et al. (2019) The UNITE database for molecular identification of fungi. *Nucleic Acids Res* 47:D259–D264
+
+## 📌 Estado del Proyecto
+
+- [x] Configuración inicial del repositorio
+- [x] Diseño experimental definido
+- [x] Estructura de directorios creada
+- [ ] Instalación de ambientes conda
+- [ ] Descarga de bases de datos
+- [ ] Preprocesamiento de datos 16S
+- [ ] Análisis 16S completado
+- [ ] Preprocesamiento de datos ITS
+- [ ] Análisis ITS completado
+- [ ] Integración de resultados 16S + ITS
+- [ ] Reporte final y manuscrito
+
+## 📮 Contacto y Contribuciones
+
+Para preguntas, sugerencias o colaboraciones:
+- **Issues**: https://github.com/mramirezs/microbioma_analysis_16S_ITS/issues
+- **Email**: [tu email]
 
 ---
 
-**Última actualización**: Enero 2026
-**Versión del pipeline**: 1.0.0
+**Última actualización**: 2 Enero 2026  
+**Versión del pipeline**: 1.0.0  
+**DOI**: [Pendiente]
