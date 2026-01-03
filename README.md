@@ -1,4 +1,4 @@
-# Análisis de Microbioma en Otitis Canina
+# Análisis de Microbioma
 
 ## 📋 Descripción del Proyecto
 
